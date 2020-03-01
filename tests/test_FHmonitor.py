@@ -1,24 +1,36 @@
-#!/usr/bin/env python
-
-"""Tests for `FHmonitor` package."""
-
+from FHmonitor.FHmonitor import Monitor
 import pytest
+from FHmonitor.store.store import MongoDB
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 
-from FHmonitor import FHmonitor
+@pytest.fixture(scope='module')
+def meter():
+    meter = Monitor()
+
+    return meter
 
 
-@pytest.fixture
-def response():
-    """Sample pytest fixture.
-
-    See more at: http://doc.pytest.org/en/latest/fixture.html
-    """
-    # import requests
-    # return requests.get('https://github.com/audreyr/cookiecutter-pypackage')
+@pytest.fixture(scope='module')
+def store():
+    store = MongoDB("mongodb://localhost:27017/", "FitHome_test", "aggregate")
+    return store
 
 
-def test_content(response):
-    """Sample pytest test function with the pytest fixture as an argument."""
-    # from bs4 import BeautifulSoup
-    # assert 'GitHub' in BeautifulSoup(response.content).title.string
+def test_init_meter(meter):
+    meter_working = meter.init_sensor()
+    assert meter_working is True
+
+
+def test_take_reading(meter):
+    Pa, Pr = meter.take_reading()
+    assert Pa > 0
+    assert Pr > 0
+
+
+def test_store_reading(meter, store):
+    Pa, Pr = meter.take_reading()
+    reading = {"Pa": Pa, "Pr": Pr, }
+    result = store.save(reading)
+    assert result is True

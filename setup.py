@@ -10,7 +10,7 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = [ ]
+requirements = ["pymongo==3.4.0", "Adafruit-Blinka==4.1.0", "adafruit-circuitpython-busdevice==4.2.1" ]
 
 setup_requirements = ['pytest-runner', ]
 
