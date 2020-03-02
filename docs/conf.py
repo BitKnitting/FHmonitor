@@ -17,11 +17,11 @@
 # relative to the documentation root, use os.path.abspath to make it
 # absolute, like shown here.
 #
+import FHmonitor
 import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
 
-import FHmonitor
 
 # -- General configuration ---------------------------------------------
 
@@ -82,8 +82,9 @@ todo_include_todos = False
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
+# https://www.sphinx-doc.org/en/stable/theming.html
 #
-html_theme = 'alabaster'
+html_theme = 'classic'
 
 # Theme options are theme-specific and customize the look and feel of a
 # theme further.  For a list of options available for each theme, see the
@@ -157,6 +158,3 @@ texinfo_documents = [
      'One line description of project.',
      'Miscellaneous'),
 ]
-
-
-
