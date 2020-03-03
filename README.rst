@@ -16,7 +16,7 @@ FHmonitor
 
 
 
-Reads the active and reactive power registers of the atm90e32 and stores the readings into a mongo database.  
+Reads the active and reactive power registers of the atm90e32 and stores the readings into a mongo database.
 
 
 * Free software: MIT license
@@ -26,10 +26,17 @@ Reads the active and reactive power registers of the atm90e32 and stores the rea
 Features
 --------
 
-* TODO
+* Implements the Monitor class to easily:
+        * access current, active and reactive power readings obtained by an _atm90e32's registers <http://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-46003-SE-M90E32AS-Datasheet.pdf>.
+        * store readings into a mongo database.
+* Built to work best on a Raspberry Pi model 3 B and above.
 
 Credits
 -------
+
+Our code stands on the shoulders of Tisham Dhar's work. In particular the _atm90e26 Arduino library https://github.com/whatnick/ATM90E26_Arduino.
+
+Another package we learned from was Circuit Setup's _atm90e32 Arduino library https://github.com/CircuitSetup/Split-Single-Phase-Energy-Meter/tree/master/Software/libraries/ATM90E32.
 
 This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
 
