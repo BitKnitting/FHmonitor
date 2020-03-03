@@ -18,6 +18,8 @@ FHmonitor
 
 Reads the active and reactive power registers of the atm90e32 and stores the readings into a mongo database.
 
+Component of the `FitHome project <https://github.com/BitKnitting/FitHome/wiki>`_
+
 
 * Free software: MIT license
 * Documentation: https://FHmonitor.readthedocs.io.
@@ -27,18 +29,15 @@ Features
 --------
 
 * Implements the Monitor class to easily:
-        * access current, active and reactive power readings obtained by an _atm90e32's registers <http://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-46003-SE-M90E32AS-Datasheet.pdf>.
+        * access current, active and reactive power readings obtained from an `atm90e32's registers <http://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-46003-SE-M90E32AS-Datasheet.pdf>`_
         * store readings into a mongo database.
-* Built to work best on a Raspberry Pi model 3 B and above.
+* Built to work best on a Raspberry Pi model 3 B and above communicating over SPI to `Circuit Setup's Split Single Phase Real Time Whole House Energy Meter (v 1.4) <https://circuitsetup.us/>`_
 
 Credits
 -------
 
-Our code stands on the shoulders of Tisham Dhar's work. In particular the _atm90e26 Arduino library https://github.com/whatnick/ATM90E26_Arduino.
+Our code stands on the shoulders of Tisham Dhar's work. In particular the `atm90e26 Arduino library <https://github.com/whatnick/ATM90E26_Arduino>`_.
 
-Another package we learned from was Circuit Setup's _atm90e32 Arduino library https://github.com/CircuitSetup/Split-Single-Phase-Energy-Meter/tree/master/Software/libraries/ATM90E32.
+Another package we learned from was Circuit Setup's `atm90e32 Arduino library <https://github.com/CircuitSetup/Split-Single-Phase-Energy-Meter/tree/master/Software/libraries/ATM90E32>`_.
 
-This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
-
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
+This package was created with `Cookiecutter <https://github.com/audreyr/cookiecutter>`_ and the `audreyr/cookiecutter-pypackage <https://github.com/audreyr/cookiecutter-pypackage>`_ project template.
