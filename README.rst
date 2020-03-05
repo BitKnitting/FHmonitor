@@ -13,12 +13,14 @@ FHmonitor
         :target: https://FHmonitor.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
+FHmonitor (FitHome monitor):
+
+* Is a Python Package written for the `FitHome Experience. <https://github.com/BitKnitting/FitHome/wiki>`_
+* Assumes the package is running on a Raspberry Pi.
+* Reads the active and reactive power registers of the atm90e32 and stores the readings into a mongo database.
 
 
 
-Reads the active and reactive power registers of the atm90e32 and stores the readings into a mongo database.
-
-Component of the `FitHome project <https://github.com/BitKnitting/FitHome/wiki>`_
 
 
 * Free software: MIT license

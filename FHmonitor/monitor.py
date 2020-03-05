@@ -1,5 +1,3 @@
-#!/home/pi/projects/FitHome_monitor/venv/bin/python3
-
 #####################################################
 # Read active and reactive power from the atm90e32 then
 # store within mongodb.
@@ -32,17 +30,22 @@ class Monitor:
     def init_sensor(self, lineFreq=4485, PGAGain=21, VoltageGain=36650,
                     CurrentGainCT1=25368, CurrentGainCT2=25358):
         """
-        Initialize the atm90e32 by setting registry properties.  The lineFreq
-        and PGAGain are unique to a house's location (in the case of)
+        Initialize the atm90e32 by setting the calibration registry properties.
+        Calibration is discussed within our
+        `FitHome wiki <https://github.com/BitKnitting/FitHome/wiki/ElectricityMonitor#calibration>`_ .
+
+        :param lineFreq: 4485 for 60 Hz (North America, Default), 389 for 50 Hz (rest of world)
+        :param PGAGain: Programmable Gain -  0 for 10A (1x), 21 for 100A (2x, Default), 42 for 100A - 200A (4x)
+        :param VoltageGain: Dependent on transformer being used.  Should be measured prior to taking readings.
+            See the Calibration discussion linked to above.
+        :param CurrentGainCT1: Dependent on the CTs being used.  Should be measured prior to taking readings.
+            See the Calibration discussion linked to above.
+        :param CurrentGainCT2: Similar to CurrentGainCT1, but for the second CT.
 
         :return: True if meter is initialized.
             False if meter could not be initialized.
-        """
-        lineFreq = 4485  # 4485 for 60 Hz (North America)
-        PGAGain = 21     # 21 for 100A (2x), 42 for >100A (4x)
-        VoltageGain = 36650  # Based on reading app notes on calibration
-        CurrentGainCT1 = 25368  # My calculation
-        CurrentGainCT2 = 25368  # My calculation
+        """  # noqa
+
         try:
             self.energy_sensor = ATM90e32(lineFreq, PGAGain, VoltageGain,
                                           CurrentGainCT1, 0, CurrentGainCT2)
@@ -59,10 +62,19 @@ class Monitor:
             handle_exception(e)
             return False
 
-    def open_db(self):
+    def open_db(self, mongodb="mongodb://localhost:27017/", db="FitHome",
+                collection="aggregate"):
+        """Opens and maintains an instance to the mongo database where
+        the power readings will be stored.
+
+        :param mongodb: URI to the mongo database running on the Raspberry Pi
+        :param db: Database within mongodb that holds the readings.
+        :param collection: name of the collection where the readings are held.
+
+        :return: True if the database can be opened.
+        """
         try:
-            self.db = MongoDB("mongodb://localhost:27017/",
-                              "FitHome", "aggregate")
+            self.db = MongoDB(mongodb, db, collection)
         except Exception as e:
             self.db = None
             handle_exception(e)
@@ -78,7 +90,7 @@ class Monitor:
     ####################################################
 
     def take_reading(self):
-        """read the active and reactive power readings from
+        """Read the active and reactive power readings from
         the atm90e32 registers.
 
         :return: (Pa, Pr) Where Pa is the float value for the
@@ -96,10 +108,27 @@ class Monitor:
     ####################################################
 
     def store_reading(self, Pa, Pr):
+        """Store the active and reactive power readings into
+        the mongodb database.
+
+        :param Pa: A floating value representing the active power reading.
+            Obtained through a call to take_reading().
+        :param Pr: A floating value representing the reactive power reading.
+            As with Pa, use take_reading() to retrieve the value from the
+            energy meter.
+
+        Returns True if the readings could be stored.
+        """
         if self.db is None:
-            logger.error(
-                'Not connected to a mongo database.  Cannot store reading.')
-            return False
+            # Try opening with the defaults.
+            db_opened = self.open_db()
+            if db_opened is False:
+                handle_exception('Cannot open the mongo database.')
+                return False
         reading = {"Pa": Pa, "Pr": Pr, }
-        self.db.save(reading)
+        reading_saved = self.db.save(reading)
+        if reading_saved is False:
+            handle_exception('Cannot store the readings.')
+            return False
+
         return True

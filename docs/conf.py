@@ -34,7 +34,7 @@ extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode']
 # If nitpick_ignore is not included, get the error:
 # WARNING: py:class reference target not found: object
 # for classes.
-nitpick_ignore = [('py:class', 'object')]
+nitpick_ignore = [('py:class', 'object'), ('py:class', 'type')]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

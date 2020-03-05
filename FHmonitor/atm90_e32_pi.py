@@ -5,7 +5,7 @@
 # locking/unlocking as well as when to set CS to HIGH/LOW.
 #
 # Copyright 2019, Margaret Johnson
-# Please creded Margaret Johnson if you use in your code.  Thank you.
+# Please credit Margaret Johnson if you use in your code.  Thank you.
 #
 # Update 1/2020 - evolved micropython version to work on Rasp Pi.
 #
@@ -31,6 +31,19 @@ SPI_READ = 1
 
 
 class ATM90e32:
+    """This code runs on a Raspberry Pi and talks to an atm90e32 chip
+    over SPI.  We use `Circuit Setup's Single Phase Energy Meter
+    <https://circuitsetup.us/>`_
+
+    Initialize the atm90e32 by setting the calibration registry properties.
+    Calibration is discussed within our
+    `FitHome wiki <https://github.com/BitKnitting/FitHome/wiki/ElectricityMonitor#calibration>`_ .
+
+    The SPI pins (including the cs pin) will need to be wired between
+    a Raspberry Pi and the atm90e32. SPI pins on the Raspberry Pi and Circuit Setup's
+    energy meter are discussed within our `FitHome wiki <https://github.com/BitKnitting/FitHome/wiki/ElectricityMonitor#spi-pins-on-rasp-pi>
+
+    """  # noqa
     ##########################################################################
 
     def __init__(self, linefreq, pgagain, ugain, igainA, igainB, igainC,

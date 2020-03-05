@@ -1,5 +1,6 @@
 #  REGISTERS *
-
+"""Mappings of the atm90e32 to user readable strings.
+"""
 # STATUS REGISTERS *#
 MeterEn = 0x00   # Metering Enable
 ChannelMapI = 0x01  # Current Channel Mapping Configuration
