@@ -1,6 +1,6 @@
-from FHmonitor.FHmonitor import Monitor
+from FHmonitor.monitor import Monitor
 import pytest
-from FHmonitor.store.store import MongoDB
+from FHmonitor.store import MongoDB
 import logging
 logging.basicConfig(level=logging.DEBUG)
 

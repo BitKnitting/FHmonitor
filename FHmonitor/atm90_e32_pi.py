@@ -9,7 +9,9 @@
 #
 # Update 1/2020 - evolved micropython version to work on Rasp Pi.
 #
-import FHmonitor.meter.atm90_e32_registers as R
+from FHmonitor.error_handling import handle_exception
+import sys
+import FHmonitor.atm90_e32_registers as R
 
 
 from adafruit_bus_device.spi_device import SPIDevice
@@ -22,12 +24,6 @@ import time
 import struct
 import logging
 logger = logging.getLogger(__name__)
-##########################################################
-# error handling
-
-
-def handle_exception(e):
-    logger.exception(f'Exception...{e}')
 
 
 SPI_WRITE = 0
@@ -38,7 +34,8 @@ class ATM90e32:
     ##########################################################################
 
     def __init__(self, linefreq, pgagain, ugain, igainA, igainB, igainC,
-                 cs_pin=board.D5):
+                 cs_pin=None):
+        pin = board.D5 if cs_pin is None else cs_pin
         # We'll need all the settings for the
         self._linefreq = linefreq
         self._pgagain = pgagain
@@ -47,12 +44,12 @@ class ATM90e32:
         self._igainB = igainB
         self._igainC = igainC
         spi = busio.SPI(board.SCLK, board.MOSI, board.MISO)
-        cs = digitalio.DigitalInOut(cs_pin)
+
+        cs = digitalio.DigitalInOut(pin)
         # How to use SPI
         # https://learn.adafruit.com/circuitpython-basics-i2c-and-spi/spi-devices
         # https://circuitpython.readthedocs.io/projects/busdevice/en/latest/_modules/adafruit_bus_device/spi_device.html
         self._device = SPIDevice(spi, cs, baudrate=200000, polarity=1, phase=1)
-        #  TODO: DETERMINE SUCCESS/FAILURE of _init_config()
         try:
             self._init_config()
         except Exception as e:
@@ -369,3 +366,8 @@ class ATM90e32:
         if ((val & 0x80000000) != 0):  # if val is negative,
             val = (0xFFFFFFFF - val) + 1  # 2s compliment + 1
         return (val)
+
+
+if __name__ == "__main__":
+    print('hello')
+    sys.exit()

@@ -9,17 +9,15 @@
 ########################################################
 
 
-from FHmonitor.meter.atm90_e32_pi import ATM90e32
-from FHmonitor.store.store import MongoDB
+from FHmonitor.error_handling import handle_exception
+from FHmonitor.atm90_e32_pi import ATM90e32
+from FHmonitor.store import MongoDB
 import logging
 logger = logging.getLogger(__name__)
 
 
-def handle_exception(e):
-    logger.exception(f'Exception...{e}')
-
-
 class Monitor:
+
     def __init__(self):
         self.db = None
         self.energy_sensor = None
@@ -31,7 +29,15 @@ class Monitor:
     # be verified.
     ####################################################
 
-    def init_sensor(self):
+    def init_sensor(self, lineFreq=4485, PGAGain=21, VoltageGain=36650,
+                    CurrentGainCT1=25368, CurrentGainCT2=25358):
+        """
+        Initialize the atm90e32 by setting registry properties.  The lineFreq
+        and PGAGain are unique to a house's location (in the case of)
+
+        :return: True if meter is initialized.
+            False if meter could not be initialized.
+        """
         lineFreq = 4485  # 4485 for 60 Hz (North America)
         PGAGain = 21     # 21 for 100A (2x), 42 for >100A (4x)
         VoltageGain = 36650  # Based on reading app notes on calibration
@@ -72,6 +78,13 @@ class Monitor:
     ####################################################
 
     def take_reading(self):
+        """read the active and reactive power readings from
+        the atm90e32 registers.
+
+        :return: (Pa, Pr) Where Pa is the float value for the
+            active power reading and Pr is the float value for
+            the reactive power reading.
+        """
         Pa = self.energy_sensor.total_active_power
         Pr = self.energy_sensor.total_reactive_power
         logger.info(
