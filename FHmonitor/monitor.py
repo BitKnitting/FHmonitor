@@ -15,6 +15,20 @@ logger = logging.getLogger(__name__)
 
 
 class Monitor:
+    """Take active and reactive power readings
+    from an atm90e32 and store the readings in
+    the Rasp Pi's mongodb.
+
+    Example::
+
+        m = Monitor()
+        m.init_sensor()
+
+    Make sure to read all the parameters that can be input to :meth:`~FHmonitor.monitor.Monitor.init_sensor`.
+    The values depend on the Power Transformer and CTs being used.
+
+
+    """
 
     def __init__(self):
         self.db = None

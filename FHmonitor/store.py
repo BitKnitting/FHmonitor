@@ -7,9 +7,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class DB:
-    """The DB class is used as an abstract class so that
-    different back ends - for example, mongodb or Firestore -
+class Store:
+    """The Store class is used as an abstract class so that
+    different back ends - for example, mongodb ,CSV, or Firestore -
     can be used to store the active and reactive power readings
     from Circuit Setup's atm90e32 meter.
     """
@@ -24,9 +24,9 @@ class DB:
 ################################################
 
 
-class MongoDB(DB):
+class MongoDB(Store):
 
-    """Implements the DB base class for mongo db.
+    """Implements the Store base class for mongo db.
 
     The __init__ method initializes a connection to the mongodb
     collection.  An exception occurs if the path_str does
@@ -81,7 +81,7 @@ class MongoDB(DB):
         return True
 
 
-class FirebaseDB(DB):
+class FirebaseDB(Store):
     """Storing to Firebase is not implemented at this time.
     """
     # TBD: We started using Firebase before Mongo which led to thinking

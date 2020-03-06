@@ -1,5 +1,5 @@
-FHmonitor package
-=================
+ FHmonitor package
+ =================
 
 The FHmonitor packages was written to run on a
 Raspberry Pi that is communicating with an atm90e32 chip over SPI.
@@ -9,7 +9,7 @@ which uses the atm90e32.
 Monitor class
 -------------
 
-The class you need to care about is :class:`~FHmonitor.monitor.Monitor`.
+The class you will use the most is :class:`~FHmonitor.monitor.Monitor`.
 This class contains methods to:
 
 * Take an active and reactive power reading (see :meth:`~FHmonitor.monitor.Monitor.take_reading`).
@@ -19,26 +19,25 @@ This class contains methods to:
 
    * Before storing readings, the mongo db must be opened (see :meth:`~FHmonitor.monitor.Monitor.open_db`).
 
-.. automodule:: monitor
+.. automodule:: FHmonitor.monitor
    :members:
    :undoc-members:
 
+Store class
+-----------
+The :class:`~FHmonitor.monitor.Monitor` class uses an implementation of the :class:`~FHmonitor.store.Store` abstract class to store power readings into a datastore.  The only data store currently available is the mongo db.  We originally started with
+a Firebase DB, but decided running everything on a Raspberry Pi was much easier.  Mongo db can be run on the Raspberry Pi at no additional $ cost.
 
-FHmonitor.store module
-----------------------
 
-.. automodule:: store
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-FHmonitor.error_handling module
--------------------------------
-
-.. automodule:: error_handling
+.. automodule:: FHmonitor.store
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+
+
+
 
 
 

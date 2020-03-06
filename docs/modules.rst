@@ -5,4 +5,4 @@ Python Packages
    :maxdepth: 4
 
    FHmonitor
-   tests
+
