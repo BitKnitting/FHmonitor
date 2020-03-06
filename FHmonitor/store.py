@@ -1,14 +1,10 @@
 #
 #
 
+from FHmonitor.error_handling import handle_exception
 import pymongo  # Have implemented for mongodb.
 import logging
 logger = logging.getLogger(__name__)
-
-
-def handle_exception(e):
-
-    logger.exception(f'Exception...{e}')
 
 
 class DB:

@@ -10,7 +10,8 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ["pymongo==3.4.0", "Adafruit-Blinka==4.1.0", "adafruit-circuitpython-busdevice==4.2.1" ]
+requirements = ["pymongo==3.4.0", "Adafruit-Blinka==4.1.0",
+                "adafruit-circuitpython-busdevice==4.2.1"]
 
 setup_requirements = ['pytest-runner', ]
 
@@ -43,6 +44,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/bitknitting/FHmonitor',
-    version='0.0.1',
+    version='0.0.2',
     zip_safe=False,
 )

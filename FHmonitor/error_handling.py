@@ -4,8 +4,8 @@ logger = logging.getLogger(__name__)
 
 def handle_exception(e):
     """Function all modules share to handled exceptions.
-    Currently functions are put into the log file as
-    an excption.
+    Currently error strings (e) are put into the log file as
+    an exception.
 
     :param e: Error message.
 
