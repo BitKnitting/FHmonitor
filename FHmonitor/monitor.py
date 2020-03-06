@@ -82,6 +82,11 @@ class Monitor:
         return True
 
     def close_db(self):
+        """It is more efficient to keep the mongodb open while
+        using it.  However, if you know you will not be doing
+        any more transactions, it is good to clean up the
+        connections.
+        """
         if self.db is not None:
             self.db.close()
 
