@@ -36,7 +36,8 @@ extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode']
 # for classes.
 nitpick_ignore = [('py:class', 'object'), ('py:class', 'type')]
 
-autodoc_mock_imports = ['pymongo', 'adafruit_bus_device']
+autodoc_mock_imports = ['pymongo',
+                        'adafruit_bus_device', 'board', 'busio', 'digitalio']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
