@@ -19,7 +19,7 @@ This class contains methods to:
 
    * Before storing readings, the mongo db must be opened (see :meth:`~FHmonitor.monitor.Monitor.open_db`).
 
-.. automodule:: FHmonitor.monitor
+.. automodule:: monitor
    :members:
    :undoc-members:
 
@@ -27,7 +27,7 @@ This class contains methods to:
 FHmonitor.store module
 ----------------------
 
-.. automodule:: FHmonitor.store
+.. automodule:: store
    :members:
    :undoc-members:
    :show-inheritance:
@@ -35,7 +35,7 @@ FHmonitor.store module
 FHmonitor.error_handling module
 -------------------------------
 
-.. automodule:: FHmonitor.error_handling
+.. automodule:: error_handling
    :members:
    :undoc-members:
    :show-inheritance:
