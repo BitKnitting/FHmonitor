@@ -24,7 +24,8 @@ class Monitor:
         m = Monitor()
         m.init_sensor()
 
-    Make sure to read all the parameters that can be input to :meth:`~FHmonitor.monitor.Monitor.init_sensor`.
+    Make sure to read all the parameters that can be input to
+    :meth:`~FHmonitor.monitor.Monitor.init_sensor`.
     The values depend on the Power Transformer and CTs being used.
 
 
