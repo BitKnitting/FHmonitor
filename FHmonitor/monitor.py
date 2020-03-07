@@ -10,6 +10,9 @@
 from FHmonitor.error_handling import handle_exception
 from FHmonitor.atm90_e32_pi import ATM90e32
 from FHmonitor.store import MongoDB
+import threading  # for blinking LED.
+import board  # for blinking LED.
+import digitalio  # for blinking LED.
 import logging
 logger = logging.getLogger(__name__)
 
@@ -28,12 +31,18 @@ class Monitor:
     :meth:`~FHmonitor.monitor.Monitor.init_sensor`.
     The values depend on the Power Transformer and CTs being used.
 
+    The :meth:`~FHmonitor.monitor.Monitor.blink` method is useful
+    to turn on and off the LED (for debugging purposes).
 
     """
 
-    def __init__(self):
+    def __init__(self, led_pin=None):
         self.db = None
         self.energy_sensor = None
+        if led_pin is None:
+            led_pin = board.D18  # We always wire to GPIO 18.
+        self.led = digitalio.DigitalInOut(board.D18)
+        self.led.direction = digitalio.Direction.OUTPUT
     ####################################################
     # Initialize the energy sensor.  The properties are
     # are written to atm90e32 registers during initialization.
@@ -152,3 +161,33 @@ class Monitor:
             return False
 
         return True
+    ####################################################
+    # Blink the LED
+    ####################################################
+
+    def blink(self, ntimes=1):
+        """Blink the monitor's LED.  Uses Python's Timer object
+        so that blinking does not pause data capture and
+        storage.
+
+        :param ntimes: Number of times to blink, defaults to 1
+        :type ntimes: int, optional
+        """
+        def turn_led_on(n):
+            print(n)
+            self.led.value = True
+            t = threading.Timer(0.5, turn_led_off, [n])
+            t.start()
+
+        def check_led(n):
+            n -= 1
+            if n > 0:
+                turn_led_on(n)
+
+        def turn_led_off(n):
+            self.led.value = False
+            t = threading.Timer(0.5, check_led, [n])
+            t.start()
+        # Start blinking.
+        assert ntimes > 0
+        turn_led_on(ntimes)
