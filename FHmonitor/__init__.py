@@ -2,4 +2,4 @@
 
 __author__ = """Margaret Johnson"""
 __email__ = 'contact@fithome.life'
-__version__ = '0.0.1'
+__version__ = '0.0.3'
