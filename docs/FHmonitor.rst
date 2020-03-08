@@ -1,10 +1,25 @@
  FHmonitor package
  =================
 
-The FHmonitor packages was written to run on a
+The FHmonitor package was written to run on a
 Raspberry Pi that is communicating with an atm90e32 chip over SPI.
 We use `Circuit Setup's energy meter <https://circuitsetup.us/index.php/product/split-single-phase-real-time-whole-house-energy-meter-v1-4/>`_,
 which uses the atm90e32.
+
+Example
+-------
+::
+
+   from FHmonitor.monitor import Monitor
+
+   m = Monitor()
+   m.init_sensor()  # You will most likely need to adjust.
+   pA, pR = m.take_reading()
+   m.store_reading(pA,pR)
+
+*Note: Make sure you understand the energy sensor initialization
+parameters of :meth:`~FHmonitor.monitor.Monitor.init_sensor`.  You
+could be using a different Power Transformer and/or Current Transformers.*
 
 Monitor class
 -------------
