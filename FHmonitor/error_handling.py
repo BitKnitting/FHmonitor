@@ -1,3 +1,4 @@
+import sys
 import logging
 logger = logging.getLogger(__name__)
 
@@ -12,3 +13,4 @@ def handle_exception(e):
     """
 
     logger.exception(f'Exception...{e}')
+    sys.exit()

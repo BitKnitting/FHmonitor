@@ -174,7 +174,6 @@ class Monitor:
         :type ntimes: int, optional
         """
         def turn_led_on(n):
-            print(n)
             self.led.value = True
             t = threading.Timer(0.5, turn_led_off, [n])
             t.start()
