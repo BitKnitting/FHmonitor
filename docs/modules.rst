@@ -1,5 +1,5 @@
-Python Packages
-===============
+FHmonitor package
+=================
 
 .. toctree::
    :maxdepth: 4

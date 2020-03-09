@@ -64,11 +64,12 @@ Ready to contribute? Here's how to set up `FHmonitor` for local development.
 
     $ git clone git@github.com:your_name_here/FHmonitor.git
 
-3. Install your local copy into a virtualenv. Assuming you have virtualenvwrapper installed, this is how you set up your fork for local development::
+3. Create a virtual environment and install developer dependencies::
 
-    $ mkvirtualenv FHmonitor
-    $ cd FHmonitor/
-    $ python setup.py develop
+    $ python3 -m venv venv
+    $ source venv/bin/acivate
+    (venv) $ cd FHmonitor/
+    (venv)$ pip3 install -r requirements_dev.txt
 
 4. Create a branch for local development::
 
