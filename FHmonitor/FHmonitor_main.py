@@ -25,10 +25,7 @@ def take_and_store(m):
 
 
 if __name__ == '__main__':
-    # log=logging.getLogger(__name__)
-    # log.addHandler(jh())
-    # log.setLevel(logging.DEBUG)
-    # log.info('HELLO HELLO 2')
+
     m = Monitor()
     m.init_sensor()  # Use the default settings.
     take_and_store(m)

@@ -32,7 +32,7 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
     ],
-    description="Reads the active and reactive power registers of the atm90e32 and stores the readings into a mongo database.  ",
+    description="Reads and stores the atm90e32 power values.",
     install_requires=requirements,
     license="MIT license",
     long_description=readme + '\n\n' + history,
