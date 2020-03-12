@@ -27,5 +27,5 @@ def take_and_store(m):
 if __name__ == '__main__':
 
     m = Monitor()
-    m.init_sensor()  # Use the default settings.
-    take_and_store(m)
+    if (m.init_sensor()):  # Use the default settings.
+        take_and_store(m)

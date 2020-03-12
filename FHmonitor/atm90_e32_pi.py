@@ -9,8 +9,9 @@
 #
 # Update 1/2020 - evolved micropython version to work on Rasp Pi.
 #
-from FHmonitor.error_handling import handle_exception
+from FHmonitor.error_handling import RegistryWriteError
 import sys
+# Used R instead of * to accomodate Flake8.
 import FHmonitor.atm90_e32_registers as R
 
 
@@ -63,10 +64,7 @@ class ATM90e32:
         # https://learn.adafruit.com/circuitpython-basics-i2c-and-spi/spi-devices
         # https://circuitpython.readthedocs.io/projects/busdevice/en/latest/_modules/adafruit_bus_device/spi_device.html
         self._device = SPIDevice(spi, cs, baudrate=200000, polarity=1, phase=1)
-        try:
-            self._init_config()
-        except Exception as e:
-            handle_exception(e)
+        self._init_config()
 
     def _usleep(self, x): return time.sleep(x/(1e7))
 
@@ -87,126 +85,124 @@ class ATM90e32:
         fvSagTh = (sagV * 100 * 1.41421356) / (2 * self._ugain / 32768)
         # convert to int for sending to the atm90e32.
         vSagTh = self._round_number(fvSagTh)
-        try:
-            self._spi_rw(SPI_WRITE, R.SoftReset, 0x789A)   # Perform soft reset
-            # enable register config access
-            self._spi_rw(SPI_WRITE, R.CfgRegAccEn, 0x55AA)
-            self._spi_rw(SPI_WRITE, R.MeterEn, 0x0001)   # Enable Metering
 
-            # Voltage sag threshold
-            self._spi_rw(SPI_WRITE, R.SagTh, vSagTh)
-            # High frequency threshold - 61.00Hz
-            self._spi_rw(SPI_WRITE, R.FreqHiTh, FreqHiThresh)
-            # Lo frequency threshold - 59.00Hz
-            self._spi_rw(SPI_WRITE, R.FreqLoTh, FreqLoThresh)
-            self._spi_rw(SPI_WRITE, R.EMMIntEn0, 0xB76F)   # Enable interrupts
-            self._spi_rw(SPI_WRITE, R.EMMIntEn1, 0xDDFD)   # Enable interrupts
-            # Clear interrupt flags
-            self._spi_rw(SPI_WRITE, R.EMMIntState0, 0x0001)
-            # Clear interrupt flags
-            self._spi_rw(SPI_WRITE, R.EMMIntState1, 0x0001)
-            # ZX2, ZX1, ZX0 pin config
-            self._spi_rw(SPI_WRITE, R.ZXConfig, 0x0A55)
+        self._spi_rw(SPI_WRITE, R.SoftReset, 0x789A)   # Perform soft reset
+        # enable register config access
+        self._spi_rw(SPI_WRITE, R.CfgRegAccEn, 0x55AA)
+        self._spi_rw(SPI_WRITE, R.MeterEn, 0x0001)   # Enable Metering
 
-            # Set metering config values (CONFIG)
-            # PL Constant MSB (default) - Meter Constant
-            # = 3200 - PL Constant = 140625000
-            self._spi_rw(SPI_WRITE, R.PLconstH, 0x0861)
-            # PL Constant LSB (default) - this is 4C68 in the application note,
-            # which is incorrect
-            self._spi_rw(SPI_WRITE, R.PLconstL, 0xC468)
-            # Mode Config (frequency set in main program)
-            self._spi_rw(SPI_WRITE, R.MMode0, self._linefreq)
-            # PGA Gain Configuration for Current Channels - 0x002A (x4)
-            # # 0x0015 (x2) # 0x0000 (1x)
-            self._spi_rw(SPI_WRITE, R.MMode1, self._pgagain)
-            # Active Startup Power Threshold - 50% of startup current
-            # = 0.9/0.00032 = 2812.5
-            # self._spi_rw(SPI_WRITE, PStartTh, 0x0AFC)
-            # Testing a little lower setting...because readings aren't
-            # happening if power is off then turned on....
-            # Startup Power Threshold = .4/.00032 = 1250 = 0x04E2
-            # Just checking with 0.
-            self._spi_rw(SPI_WRITE, R.PStartTh, 0x0000)
-            # Reactive Startup Power Threshold
-            #  self._spi_rw(SPI_WRITE, QStartTh, 0x0AEC)
-            self._spi_rw(SPI_WRITE, R.QStartTh, 0x0000)
-            # Apparent Startup Power Threshold
-            self._spi_rw(SPI_WRITE, R.SStartTh, 0x0000)
-            # Active Phase Threshold = 10% of startup current
-            # = 0.06/0.00032 = 187.5
-            # self._spi_rw(SPI_WRITE, PPhaseTh, 0x00BC)
-            self._spi_rw(SPI_WRITE, R.PPhaseTh, 0x0000)
-            # Reactive Phase Threshold
-            self._spi_rw(SPI_WRITE, R.QPhaseTh, 0x0000)
-            # Apparent  Phase Threshold
-            self._spi_rw(SPI_WRITE, R.SPhaseTh, 0x0000)
+        # Voltage sag threshold
+        self._spi_rw(SPI_WRITE, R.SagTh, vSagTh)
+        # High frequency threshold - 61.00Hz
+        self._spi_rw(SPI_WRITE, R.FreqHiTh, FreqHiThresh)
+        # Lo frequency threshold - 59.00Hz
+        self._spi_rw(SPI_WRITE, R.FreqLoTh, FreqLoThresh)
+        self._spi_rw(SPI_WRITE, R.EMMIntEn0, 0xB76F)   # Enable interrupts
+        self._spi_rw(SPI_WRITE, R.EMMIntEn1, 0xDDFD)   # Enable interrupts
+        # Clear interrupt flags
+        self._spi_rw(SPI_WRITE, R.EMMIntState0, 0x0001)
+        # Clear interrupt flags
+        self._spi_rw(SPI_WRITE, R.EMMIntState1, 0x0001)
+        # ZX2, ZX1, ZX0 pin config
+        self._spi_rw(SPI_WRITE, R.ZXConfig, 0x0A55)
 
-            # Set metering calibration values (CALIBRATION)
-            # Line calibration gain
-            self._spi_rw(SPI_WRITE, R.PQGainA, 0x0000)
-            # Line calibration angle
-            self._spi_rw(SPI_WRITE, R.PhiA, 0x0000)
-            # Line calibration gain
-            self._spi_rw(SPI_WRITE, R.PQGainB, 0x0000)
-            # Line calibration angle
-            self._spi_rw(SPI_WRITE, R.PhiB, 0x0000)
-            # Line calibration gain
-            self._spi_rw(SPI_WRITE, R.PQGainC, 0x0000)
-            # Line calibration angle
-            self._spi_rw(SPI_WRITE, R.PhiC, 0x0000)
-            # A line active power offset
-            self._spi_rw(SPI_WRITE, R.PoffsetA, 0x0000)
-            # A line reactive power offset
-            self._spi_rw(SPI_WRITE, R.QoffsetA, 0x0000)
-            # B line active power offset
-            self._spi_rw(SPI_WRITE, R.PoffsetB, 0x0000)
-            # B line reactive power offset
-            self._spi_rw(SPI_WRITE, R.QoffsetB, 0x0000)
-            # C line active power offset
-            self._spi_rw(SPI_WRITE, R.PoffsetC, 0x0000)
-            # C line reactive power offset
-            self._spi_rw(SPI_WRITE, R.QoffsetC, 0x0000)
+        # Set metering config values (CONFIG)
+        # PL Constant MSB (default) - Meter Constant
+        # = 3200 - PL Constant = 140625000
+        self._spi_rw(SPI_WRITE, R.PLconstH, 0x0861)
+        # PL Constant LSB (default) - this is 4C68 in the application note,
+        # which is incorrect
+        self._spi_rw(SPI_WRITE, R.PLconstL, 0xC468)
+        # Mode Config (frequency set in main program)
+        self._spi_rw(SPI_WRITE, R.MMode0, self._linefreq)
+        # PGA Gain Configuration for Current Channels - 0x002A (x4)
+        # # 0x0015 (x2) # 0x0000 (1x)
+        self._spi_rw(SPI_WRITE, R.MMode1, self._pgagain)
+        # Active Startup Power Threshold - 50% of startup current
+        # = 0.9/0.00032 = 2812.5
+        # self._spi_rw(SPI_WRITE, PStartTh, 0x0AFC)
+        # Testing a little lower setting...because readings aren't
+        # happening if power is off then turned on....
+        # Startup Power Threshold = .4/.00032 = 1250 = 0x04E2
+        # Just checking with 0.
+        self._spi_rw(SPI_WRITE, R.PStartTh, 0x0000)
+        # Reactive Startup Power Threshold
+        #  self._spi_rw(SPI_WRITE, QStartTh, 0x0AEC)
+        self._spi_rw(SPI_WRITE, R.QStartTh, 0x0000)
+        # Apparent Startup Power Threshold
+        self._spi_rw(SPI_WRITE, R.SStartTh, 0x0000)
+        # Active Phase Threshold = 10% of startup current
+        # = 0.06/0.00032 = 187.5
+        # self._spi_rw(SPI_WRITE, PPhaseTh, 0x00BC)
+        self._spi_rw(SPI_WRITE, R.PPhaseTh, 0x0000)
+        # Reactive Phase Threshold
+        self._spi_rw(SPI_WRITE, R.QPhaseTh, 0x0000)
+        # Apparent  Phase Threshold
+        self._spi_rw(SPI_WRITE, R.SPhaseTh, 0x0000)
 
-            # Set metering calibration values (HARMONIC)
-            # A Fund. active power offset
-            self._spi_rw(SPI_WRITE, R.POffsetAF, 0x0000)
-            # B Fund. active power offset
-            self._spi_rw(SPI_WRITE, R.POffsetBF, 0x0000)
-            # C Fund. active power offset
-            self._spi_rw(SPI_WRITE, R.POffsetCF, 0x0000)
-            # A Fund. active power gain
-            self._spi_rw(SPI_WRITE, R.PGainAF, 0x0000)
-            # B Fund. active power gain
-            self._spi_rw(SPI_WRITE, R.PGainBF, 0x0000)
-            # C Fund. active power gain
-            self._spi_rw(SPI_WRITE, R.PGainCF, 0x0000)
+        # Set metering calibration values (CALIBRATION)
+        # Line calibration gain
+        self._spi_rw(SPI_WRITE, R.PQGainA, 0x0000)
+        # Line calibration angle
+        self._spi_rw(SPI_WRITE, R.PhiA, 0x0000)
+        # Line calibration gain
+        self._spi_rw(SPI_WRITE, R.PQGainB, 0x0000)
+        # Line calibration angle
+        self._spi_rw(SPI_WRITE, R.PhiB, 0x0000)
+        # Line calibration gain
+        self._spi_rw(SPI_WRITE, R.PQGainC, 0x0000)
+        # Line calibration angle
+        self._spi_rw(SPI_WRITE, R.PhiC, 0x0000)
+        # A line active power offset
+        self._spi_rw(SPI_WRITE, R.PoffsetA, 0x0000)
+        # A line reactive power offset
+        self._spi_rw(SPI_WRITE, R.QoffsetA, 0x0000)
+        # B line active power offset
+        self._spi_rw(SPI_WRITE, R.PoffsetB, 0x0000)
+        # B line reactive power offset
+        self._spi_rw(SPI_WRITE, R.QoffsetB, 0x0000)
+        # C line active power offset
+        self._spi_rw(SPI_WRITE, R.PoffsetC, 0x0000)
+        # C line reactive power offset
+        self._spi_rw(SPI_WRITE, R.QoffsetC, 0x0000)
 
-            # Set measurement calibration values (ADJUST)
-            # A Voltage rms gain
-            self._spi_rw(SPI_WRITE, R.UgainA, self._ugain)
-            # A line current gain
-            self._spi_rw(SPI_WRITE, R.IgainA, self._igainA)
-            self._spi_rw(SPI_WRITE, R.UoffsetA, 0x0000)    # A Voltage offset
-            # A line current offset
-            self._spi_rw(SPI_WRITE, R.IoffsetA, 0x0000)
-            # B Voltage rms gain
-            self._spi_rw(SPI_WRITE, R.UgainB, self._ugain)
-            # B line current gain
-            self._spi_rw(SPI_WRITE, R.IgainB, self._igainB)
-            self._spi_rw(SPI_WRITE, R.UoffsetB, 0x0000)    # B Voltage offset
-            # B line current offset
-            self._spi_rw(SPI_WRITE, R.IoffsetB, 0x0000)
-            # C Voltage rms gain
-            self._spi_rw(SPI_WRITE, R.UgainC, self._ugain)
-            # C line current gain
-            self._spi_rw(SPI_WRITE, R.IgainC, self._igainC)
-            self._spi_rw(SPI_WRITE, R.UoffsetC, 0x0000)    # C Voltage offset
-            # C line current offset
-            self._spi_rw(SPI_WRITE, R.IoffsetC, 0x0000)
-            self._spi_rw(SPI_WRITE, R.CfgRegAccEn, 0x0000)  # end configuration
-        except Exception as e:
-            handle_exception(e)
+        # Set metering calibration values (HARMONIC)
+        # A Fund. active power offset
+        self._spi_rw(SPI_WRITE, R.POffsetAF, 0x0000)
+        # B Fund. active power offset
+        self._spi_rw(SPI_WRITE, R.POffsetBF, 0x0000)
+        # C Fund. active power offset
+        self._spi_rw(SPI_WRITE, R.POffsetCF, 0x0000)
+        # A Fund. active power gain
+        self._spi_rw(SPI_WRITE, R.PGainAF, 0x0000)
+        # B Fund. active power gain
+        self._spi_rw(SPI_WRITE, R.PGainBF, 0x0000)
+        # C Fund. active power gain
+        self._spi_rw(SPI_WRITE, R.PGainCF, 0x0000)
+
+        # Set measurement calibration values (ADJUST)
+        # A Voltage rms gain
+        self._spi_rw(SPI_WRITE, R.UgainA, self._ugain)
+        # A line current gain
+        self._spi_rw(SPI_WRITE, R.IgainA, self._igainA)
+        self._spi_rw(SPI_WRITE, R.UoffsetA, 0x0000)    # A Voltage offset
+        # A line current offset
+        self._spi_rw(SPI_WRITE, R.IoffsetA, 0x0000)
+        # B Voltage rms gain
+        self._spi_rw(SPI_WRITE, R.UgainB, self._ugain)
+        # B line current gain
+        self._spi_rw(SPI_WRITE, R.IgainB, self._igainB)
+        self._spi_rw(SPI_WRITE, R.UoffsetB, 0x0000)    # B Voltage offset
+        # B line current offset
+        self._spi_rw(SPI_WRITE, R.IoffsetB, 0x0000)
+        # C Voltage rms gain
+        self._spi_rw(SPI_WRITE, R.UgainC, self._ugain)
+        # C line current gain
+        self._spi_rw(SPI_WRITE, R.IgainC, self._igainC)
+        self._spi_rw(SPI_WRITE, R.UoffsetC, 0x0000)    # C Voltage offset
+        # C line current offset
+        self._spi_rw(SPI_WRITE, R.IoffsetC, 0x0000)
+        self._spi_rw(SPI_WRITE, R.CfgRegAccEn, 0x0000)  # end configuration
 
         # In order to get correct results, I needed to insert
         # a 'significant' delay.
@@ -350,11 +346,21 @@ class ATM90e32:
 
     ######################################################
     # read or write to spi.
-    # Writes are verified.  If we detect the value was not
-    # registered to the address, we raise an exception.
+    # Writes are verified. If verification shows our
+    # write didn't work, we raise an exception.
     ######################################################
 
     def _spi_rw(self, rw, address, val):
+        """read or write to spi.
+        Writes are verified. If verification shows our
+        write didn't work, we raise an exception.
+
+        :param rw: 1 if read, 0 if write.
+        :param address: One of the registers identified
+            in atm90_e32_registers.py.
+        :param val: The two byte hex value to write to the
+            register (assumes rw = 0).
+        """
 
         if(rw):  # read
             return self.read(address)
@@ -362,7 +368,7 @@ class ATM90e32:
             self.write(address, val)
             if not self.verify(address, val):
                 e = f'EXCEPTION: Write to address 0x{address:02x} Failed.'
-                handle_exception(e)
+                raise RegistryWriteError(e)
     ######################################################
 
     def _round_number(self, f_num):
