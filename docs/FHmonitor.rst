@@ -6,8 +6,13 @@ Raspberry Pi that is communicating with an atm90e32 chip over SPI.
 We use `Circuit Setup's energy meter <https://circuitsetup.us/index.php/product/split-single-phase-real-time-whole-house-energy-meter-v1-4/>`_,
 which uses the atm90e32.
 
-Example
--------
+Getting Started
+---------------
+Once you install the FHmonitor package within your virtualenv, just say hello::
+
+(venv)$hello
+
+hello is a command that runs the following script:
 ::
 
    from FHmonitor.monitor import Monitor
@@ -17,9 +22,63 @@ Example
    pA, pR = m.take_reading()
    m.store_reading(pA,pR)
 
-*Note: Make sure you understand the energy sensor initialization
+Note: Make sure you understand the energy sensor initialization
 parameters of :meth:`~FHmonitor.monitor.Monitor.init_sensor`.  You
-could be using a different Power Transformer and/or Current Transformers.*
+could be using a different Power Transformer and/or Current Transformers.
+Some default values are discussed in `Circuit Setup's documentation <https://github.com/CircuitSetup/Split-Single-Phase-Energy-Meter#calibration>`_.
+
+
+Calibrating the Monitor
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Variables for setting monitor calibration are found within :meth:`~FHmonitor.monitor.Monitor.init_sensor`.
+Readings will most likely be off unless you calibrate what the atm90e32
+chip assumes about the Power Tranformer and Current Tranformers you are using.
+We use the default values for::
+
+   lineFreq = 4485  # 4485 for 60 Hz (North America)
+   PGAGain = 21     # 21 for 100A (2x), 42 for >100A (4x)
+
+What is left to calibrate are the voltage and current gain values.
+These are important, because they can cause havoc with the accuracy of the voltage, current, power readings.
+
+Voltage Calibration
+~~~~~~~~~~~~~~~~~~~
+
+The gain value is tied to the transformer we are using.  We decided to standardize on the `Jameco 9V power supply, part no. 157041 <https://www.jameco.com/shop/ProductDisplay?catalogId=10001&langId=-1&storeId=10001&productId=157041>`_.  The default voltage gain for a 9V AC transformer was 42080.  With this setting for voltage gain, our readings were over 15 watts higher than what the actual voltage was.
+
+To determine the actual voltage, we used the extremely useful `Kill-A-Watt <https://amzn.to/2Mcjkt7>`_
+as the voltage reference.
+
+To calibrate the voltage gain, we used the formula/info in `the app note <https://github.com/BitKnitting/energy_monitor_firmware/blob/master/docs/Atmel-46103-SE-M90E32AS-ApplicationNote.pdf>`_
+See section 4.2.6 Voltage/Current Measurement
+Calibration where it discusses using existing voltage gain.
+
+where:
+
+- reference voltage = reading from Kill-A-Watt
+- voltage measurement value = the reading for voltage we got from initializing the atm90e32 instance with the voltage gain value and reading the `line_voltageA` property.
+
+new `VoltageGain` = reference voltage/voltage measurement * current voltage gain
+
+e.g. using a different 9V transformer:
+- Kill-A-Watt shows V = 121.5
+- reading shows voltage at 117.5
+- current `VoltageGain` is 36650
+
+new `Voltage Gain = 121.5/117.5*36650 = 37898`
+
+Calculate the value, and change the `VoltageGain` to the calculated value.
+
+Current Calibration
+~~~~~~~~~~~~~~~~~~~
+
+We found the default current gain gave current readings close to what we
+got with the Kill-A-Watt.  Because it was easy to do so, we set the
+`CurrentGainCT1` and `CurrentGainCT2` values to our calculation,
+using the current readings in place of the voltage readings as discussed
+in the app note.
+
 
 Monitor class
 -------------
