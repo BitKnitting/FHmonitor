@@ -1,13 +1,37 @@
  FHmonitor package
  =================
 
-The FHmonitor package was written to run on a
+The FHmonitor package runs on a
 Raspberry Pi that is communicating with an atm90e32 chip over SPI.
 We use `Circuit Setup's energy meter <https://circuitsetup.us/index.php/product/split-single-phase-real-time-whole-house-energy-meter-v1-4/>`_,
-which uses the atm90e32.
+which uses the atm90e32.  Current Transformers (CTs) that are plugged into the energy meter clamp onto the power lines.  The CTs provide a signal to the elecriticy monitor that is then interpreted into power line measurements like voltage and current.
 
-Getting Started
----------------
+The FHmonitor package:
+
+   -  reads power readings from the electricity monitor.
+   -  stores readings into the mongodb running on the Raspberry Pi.
+
+.. image:: images/Electricity_Monitor_Rasp_Pi.png
+   :width: 300
+
+The Hardware
+~~~~~~~~~~~~
+Before using the FHmonitor package, you must have a running energy monitor.  The energy monitor consists of:
+
+* `Raspberry Pi 3 Model B+ <https://www.adafruit.com/product/3055>`_
+* `Circuit Setup's energy meter <https://circuitsetup.us/index.php/product/split-single-phase-real-time-whole-house-energy-meter-v1-4/>`_
+* An LED of any color.  The LED helps with debugging.
+* A resistor between 400 and 1K ohm.
+
+Hardware Setup Steps
+~~~~~~~~~~~~~~~~~~~~
+- Set up the Raspberry Pi.
+
+
+
+Say hello
+~~~~~~~~~
+
 Once you install the FHmonitor package within your virtualenv, just say hello::
 
 (venv)$hello
@@ -20,10 +44,9 @@ hello is a command that runs the following script:
    m = Monitor()
    m.init_sensor()  # You will most likely need to adjust.
    pA, pR = m.take_reading()
-   m.store_reading(pA,pR)
 
 Note: Make sure you understand the energy sensor initialization
-parameters of :meth:`~FHmonitor.monitor.Monitor.init_sensor`.  You
+parameters of the :meth:`~FHmonitor.monitor.Monitor.init_sensor` method.  You
 could be using a different Power Transformer and/or Current Transformers.
 Some default values are discussed in `Circuit Setup's documentation <https://github.com/CircuitSetup/Split-Single-Phase-Energy-Meter#calibration>`_.
 
