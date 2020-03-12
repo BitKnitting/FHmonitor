@@ -32,7 +32,7 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
     ],
-    description="Reads and stores the atm90e32 power values.",
+    description="Reads and stores atm90e32 power values.",
     install_requires=requirements,
     license="MIT license",
     long_description=readme + '\n\n' + history,
@@ -44,11 +44,13 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/bitknitting/FHmonitor',
-    version='0.0.6',
+    version='0.0.7',
     zip_safe=False,
     entry_points={
         'console_scripts': [
-            'hello_world=FHpackage:main'
+            'hello=FHmonitor.command_line:hello',
+            'start=FHmonitor.command_line:start',
+            'status=FHmonitor.command_line:status'
         ]
     }
 )
