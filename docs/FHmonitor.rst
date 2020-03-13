@@ -25,7 +25,7 @@ Before using the FHmonitor package, you must have a running energy monitor.  The
 
 Hardware Setup Steps
 ~~~~~~~~~~~~~~~~~~~~
-- Set up the Raspberry Pi.
+- :doc:`Set up the Raspberry Pi. <rasppi>`
 
 
 
