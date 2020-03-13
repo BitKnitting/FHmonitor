@@ -13,7 +13,15 @@ Our instructions assume a Mac is being used.
 - Run Etcher to copy the image onto the SD Card.
 - Open a terminal window and cd into the boot drive.  For us this was `cd /Volumes/boot`.
 - Add "SSH" file to the root of the image.  We do this by opening a terminal on the boot partition and typing `$touch ssh`
-- Create the `wpa_supplicant.conf` file : `$touch wpa_supplicant.conf`.  Copy the contents into the file `$ nano wpa_supplicant.conf`:
+- Create the `wpa_supplicant.conf` file::
+
+    $touch wpa_supplicant.conf
+
+Copy the contents into the file::
+
+    $ nano wpa_supplicant.conf
+
+
 ::
 
     country=US
@@ -132,8 +140,7 @@ No SSH, Won't connect to wifi
 This happened to us (grrrrrrr)... We had files we wanted to access but could not longer connect to the Rasp Pi over ssh....
 
 We got our Rasp Pi in such a tizzy that we couldn't figure the magic incantations to make
-it all better (a warning to us explorers who blindly trust a blog post about
- `ufw`.  Luckily we were able to mount the drive on our Mac following
+it all better (a warning to us explorers who blindly trust a blog post about ufw.  Luckily we were able to mount the drive on our Mac following
 `these directions <https://www.jeffgeerling.com/blog/2017/mount-raspberry-pi-sd-card-on-mac-read-only-osxfuse-and-ext4fuse>`_::
 
     sudo mkdir /Volumes/rpi
