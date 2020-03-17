@@ -1,5 +1,8 @@
- FHmonitor package
- =================
+FHmonitor package
+=================
+
+Intro
+~~~~~
 
 The FHmonitor package runs on a
 Raspberry Pi that is communicating with an atm90e32 chip over SPI.
@@ -28,6 +31,7 @@ Hardware Setup Steps
 - :doc:`Set up the Raspberry Pi. <rasppi>`
 - :doc:`Connect the Hardware. <connect_the_hw>`
 
+TODO: CONNECT THE CTs....
 
 
 Say hello
