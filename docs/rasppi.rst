@@ -109,6 +109,14 @@ To check if the mongodb service is running::
 
     sudo apt-get install git
 
+- Pandas installation was failing with the message::
+
+    Importing the numpy c-extensions failed.
+
+To fix this::
+
+    sudo apt-get install python-dev libatlas-base-dev
+
 That's it for installing Raspberry Pi to communicate with the electricity monitor.
 
 Other Stuff
