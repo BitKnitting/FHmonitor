@@ -50,6 +50,19 @@ hello is a command that runs the following script:
    m.init_sensor()  # You will most likely need to adjust.
    pA, pR = m.take_reading()
 
+Calibration
+~~~~~~~~~~~
+
+Readings will be off unless the energy monitor is calibrated.  The most
+important thing to calibrate is the voltage reading.
+
+**Note: You need only calibrate if you are unsure if the Power Transformer
+used with the energy monitor has not been already calibrated.**
+
+To calibrate:
+- Plug the Power Transformer into a `Kill-A-Watt <https://amzn.to/2Mcjkt7>`_.  The Kill-A-Watt will
+be the reference voltage.
+
 Note: Make sure you understand the energy sensor initialization
 parameters of the :meth:`~FHmonitor.monitor.Monitor.init_sensor` method.  You
 could be using a different Power Transformer and/or Current Transformers.
@@ -59,6 +72,18 @@ Some default values are discussed in `Circuit Setup's documentation <https://git
 Calibrating the Monitor
 ~~~~~~~~~~~~~~~~~~~~~~~
 
+At a minimum, the voltage should be calibrated prior to using a new
+Power Transformer with the energy monitor.  If the same Power Transformer
+is used on other energy monitors, the calibration values should be fine with it.
+
+
+- Measure the voltage reading from the energy monitor::
+
+   from FHmonitor.atm90_e32_pi import ATMATM90e32
+   energy_sensor = ATM90e32(lineFreq, PGAGain, VoltageGain,
+                            CurrentGainCT1, 0, CurrentGainCT2)
+   m.init_sensor() # Initialize with the current values.
+   voltage_reading = m.
 Variables for setting monitor calibration are found within :meth:`~FHmonitor.monitor.Monitor.init_sensor`.
 Readings will most likely be off unless you calibrate what the atm90e32
 chip assumes about the Power Tranformer and Current Tranformers you are using.

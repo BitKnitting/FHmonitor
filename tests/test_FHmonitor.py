@@ -1,8 +1,17 @@
 from FHmonitor.monitor import Monitor
 import pytest
 from FHmonitor.store import MongoDB
+from FHmonitor.atm90_e32_pi import ATM90e32
+from FHmonitor.calibrate import Calibrate
 import logging
 logging.basicConfig(level=logging.DEBUG)
+
+
+@pytest.fixture(scope='module')
+def atm90e32():
+    atm90e32 = ATM90e32()
+
+    return atm90e32
 
 
 @pytest.fixture(scope='module')
@@ -34,3 +43,9 @@ def test_store_reading(meter, store):
     reading = {"Pa": Pa, "Pr": Pr, }
     result = store.save(reading)
     assert result is True
+
+
+def test_calibrate_voltage(atm90e32):
+    c = Calibrate()
+    assert c.lineFreq > 0
+    pass
