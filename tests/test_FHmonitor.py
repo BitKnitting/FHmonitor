@@ -8,13 +8,6 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 @pytest.fixture(scope='module')
-def atm90e32():
-    atm90e32 = ATM90e32()
-
-    return atm90e32
-
-
-@pytest.fixture(scope='module')
 def meter():
     meter = Monitor()
 
@@ -45,7 +38,6 @@ def test_store_reading(meter, store):
     assert result is True
 
 
-def test_calibrate_voltage(atm90e32):
+def test_calibrate_voltage():
     c = Calibrate()
     assert c.lineFreq > 0
-    pass

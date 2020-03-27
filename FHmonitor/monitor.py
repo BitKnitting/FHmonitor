@@ -10,6 +10,7 @@
 from FHmonitor.error_handling import handle_exception
 from FHmonitor.atm90_e32_pi import ATM90e32
 from FHmonitor.store import MongoDB
+from FHmonitor.calibrate import Calibrate
 import threading  # for blinking LED.
 import board  # for blinking LED.
 import digitalio  # for blinking LED.
@@ -51,8 +52,7 @@ class Monitor:
     # be verified.
     ####################################################
 
-    def init_sensor(self, lineFreq=4485, PGAGain=21, VoltageGain=36650,
-                    CurrentGainCT1=25368, CurrentGainCT2=25358):
+    def init_sensor(self):
         """
         Initialize the atm90e32 by setting the calibration registry properties.
         Calibration is discussed within our
@@ -69,10 +69,12 @@ class Monitor:
         :return: True if meter is initialized.
             False if meter could not be initialized.
         """  # noqa
+        # Get the calibratiion parameters
+        c = Calibrate()
 
         try:
-            self.energy_sensor = ATM90e32(lineFreq, PGAGain, VoltageGain,
-                                          CurrentGainCT1, 0, CurrentGainCT2)
+            self.energy_sensor = ATM90e32(c.lineFreq, c.PGAGain, c.VoltageGain,
+                                          c.CurrentGain, 0, c.CurrentGain)
             logger.info('Energy meter has been initialized.')
             # We have an instance of the atm90e32.  Let's check if we get
             # sensible readings.
@@ -129,7 +131,7 @@ class Monitor:
         Pa = self.energy_sensor.total_active_power
         Pr = self.energy_sensor.total_reactive_power
         logger.info(
-            f'Active Power reading: {Pa}  Reactive Power Reading: {Pr}')
+            f'Active Power reading: {Pa:.2f}  Reactive Power Reading: {Pr:.2f}')
         return Pa, Pr
 
     ####################################################

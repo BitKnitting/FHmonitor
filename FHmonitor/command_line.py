@@ -1,7 +1,11 @@
 from FHmonitor.monitor import Monitor  # noqa
+from FHmonitor.calibrate import Calibrate  # noqa
 import textwrap
 import os
 import stat
+import argparse
+import logging
+logging.basicConfig(level=logging.DEBUG)
 init_class_text_list = textwrap.wrap(("1) Create an instance of the "
                                       "Monitor class."), 50)
 init_sensor_text_list = textwrap.wrap(("2) Initialize the energy meter..."
@@ -13,7 +17,7 @@ init_sensor_text_list = textwrap.wrap(("2) Initialize the energy meter..."
                                        "you are using.  "), 50)
 
 
-def hello():
+def hello_monitor():
     print(*(init_class_text_list[i]
             for i in range(len(init_class_text_list))), sep='\n')
     m = Monitor()
@@ -31,7 +35,7 @@ def hello():
     print('==================================================')
 
 
-def start():
+def start_service():
     """Get the systemd service up and running that runs FHmonitor_main.py
 
     TODO: Still not quite right...
@@ -62,12 +66,33 @@ def start():
     # Start the service
     os.system('sudo systemctl start FHmonitor_main')
     print('...status...')
-    status()
+    status_service()
     print('============================')
 
 
-def status():
+def status_service():
     os.system('systemctl status FHmonitor_main')
+
+
+def calibrate_voltage():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-s', '--save', action="store_true",
+                        help='Save new gain.')
+    args = parser.parse_args()
+    c = Calibrate()
+    c.calibrate_voltage(save_new_gain=args.save)
+
+
+def calibrate_current():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-s', '--save', action="store_true",
+                        help='Save new gain.')
+    args = parser.parse_args()
+    c = Calibrate()
+    c.calibrate_current(save_new_gain=args.save)
+
+
+# Executing scripts, not the module.
 
 
 def main():
