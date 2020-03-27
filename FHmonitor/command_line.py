@@ -55,7 +55,7 @@ def start_service():
     os.system(cmd_str)
     # Copy the bash script..
     bash_path = systemd_path + '/run_FHmonitor_main.sh'
-    cmd_str = 'sudo cp ' + bash_path + ' /lib/systemd/system/.'
+    cmd_str = 'sudo cp ' + bash_path + ' /usr/local/bin/.'
     os.system(cmd_str)
     # Enable the service
     os.system('sudo systemctl enable FHmonitor_main')
@@ -68,6 +68,11 @@ def start_service():
     print('...status...')
     status_service()
     print('============================')
+
+
+def stop_service():
+    os.system('sudo systemctl stop FHmonitor_main')
+    pass
 
 
 def status_service():

@@ -1,7 +1,5 @@
-from FHmonitor.calibrate import Calibrate
+from FHmonitor.command_line import start_service
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
-c = Calibrate()
-# c.calibrate_voltage(save_new_gain=True)
-c.calibrate_current(save_new_gain=True)
+start_service()
