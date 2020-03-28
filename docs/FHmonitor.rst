@@ -1,8 +1,6 @@
-FHmonitor package
-=================
 
 Intro
-~~~~~
+=====
 
 The FHmonitor package runs on a
 Raspberry Pi that is communicating with an atm90e32 chip over SPI.
@@ -18,7 +16,7 @@ The FHmonitor package:
    :width: 300
 
 The Hardware
-~~~~~~~~~~~~
+============
 Before using the FHmonitor package, you must have a running energy monitor.  The energy monitor consists of:
 
 * `Raspberry Pi 3 Model B+ <https://www.adafruit.com/product/3055>`_
@@ -27,114 +25,96 @@ Before using the FHmonitor package, you must have a running energy monitor.  The
 * A resistor between 400 and 1K ohm.
 
 Hardware Setup Steps
-~~~~~~~~~~~~~~~~~~~~
+====================
 - :doc:`Set up the Raspberry Pi. <rasppi>`
 - :doc:`Connect the Hardware. <connect_the_hw>`
 
-TODO: CONNECT THE CTs....
+Calibrating the Meter
+=====================
+Getting good readings from the atm90e32 assumes the parameters defined in `calibration.json <https://github.com/BitKnitting/FHmonitor/blob/master/FHmonitor/calibration.json>`_
+are set to reflect the environment in which the meter will be taking readings.
+The various calibration parameters are:
+
+- **Frequency of AC coming into your home - lineFreq**:  Since we are in North America where the AC frequency is 60Hz, We set this to **4485**.  The rest of the world is at 50Hz. If that is how your home's power is configured, change this value in `calibration.json <https://github.com/BitKnitting/FHmonitor/blob/master/FHmonitor/calibration.json>`_ to **389**.
+
+- **Gain for the CT clamps - PGAGain**: The default setting is for homes that have 100 amp service - **21**.  Many houses are big and/or suck up more electricity than a 100 amp service provides.  The PGAGain must be set to **42** for homes with electricity service between 100-200 amps.
+
+- **Gain adjustment for Voltage Readings - VoltageGain**: This value depends on the power 9v/12v power supply being used with the energy meter. `One of CircuitSetup's web pages <https://github.com/CircuitSetup/Split-Single-Phase-Energy-Meter#calibration>`_ provides default values for some common power supplies.  We decided to standardize on the `Jameco 9V power supply, part no. 157041 <https://www.jameco.com/shop/ProductDisplay?catalogId=10001&langId=-1&storeId=10001&productId=157041>`_.
+
+- **Gain adjustment for Current Readings - CurrentGain**: This value depends CT (Current Transformer) being used.  We are using the SCT-016.
+
+*NOTE: We used the command line utilities*::
+
+   calibrate_voltage
+   calibrate_current
+
+*discussed below to set VoltageGain and CurrentGain.*
+*Also Note: CircuitSetup's firmware for the energy meter uses a current gain setting for each of the CTs.  We simplified this to use just one parameter -  CurrentGain - for both CTs.*
+
+calibrate_voltage
+~~~~~~~~~~~~~~~~~
+After starting up the venv and pip installing FHmonitor, the calibrate_voltage command is available.  This
+command runs a python script that will adjust the VoltageGain value within `calibration.json <https://github.com/BitKnitting/FHmonitor/blob/master/FHmonitor/calibration.json>`_.  Prior to
+using the command, you should have the energy meter plugged into a `Kill-A-Watt <https://amzn.to/2Mcjkt7>`_.  The Kill-A-Watt will
+be the reference voltage.  Running the command with the -s (--save) option will figure out the new VoltageGain
+value and then update `calibration.json <https://github.com/BitKnitting/FHmonitor/blob/master/FHmonitor/calibration.json>`_.
+If the -s option is not specified, the new VoltageGain value will not be saved.
+
+calibrate_current
+~~~~~~~~~~~~~~~~~
+calibrate_current Instead similar in concept to calibrate_voltage.  Instead of using voltage readings, current readings are used.  The
+CT can be plugged into either of the CT plugs on the meter.  We use a test wire assembly to read the current
+of a device (for example a lamp) using a CT.
+
+.. image:: images/test_wiring_to_measure_current.jpg
+   :width: 300
+
+systemd service
+===============
+The systemd service, `FHmonitor_main.service <https://github.com/BitKnitting/FHmonitor/blob/master/FHmonitor/systemd/FHmonitor_main.service>`_
+starts a shell script, `run_FHmonitor_main.sh <https://github.com/BitKnitting/FHmonitor/blob/master/FHmonitor/systemd/run_FHmonitor_main.sh>`_.
+The shell script starts `FHmonitor_main.py <https://github.com/BitKnitting/FHmonitor/blob/b06dc54c94eb5ee25eb026f391f94ad468c9e77d/FHmonitor/systemd/FHmonitor_main.py>`_.
+
+install_service
+~~~~~~~~~~~~~~~
+
+Use the command::
+
+   install_service
+
+to install the systemd service.  The code for install_service is located in `command_line.py <https://github.com/BitKnitting/FHmonitor/blob/b06dc54c94eb5ee25eb026f391f94ad468c9e77d/FHmonitor/command_line.py>`_.
+
+install_service modifies:
+
+- the ExecStart= line of FHmonitor_main.service to reference the run_FHmonitor_main.sh script located within the project's systemd directory.
+- the ProjPath in run_FHmonitor_main.sh to be the absolute path to where the FHmonitor project is located.
+- the permissions on the files in the systemd directory.
+
+Then copies FHmonitor_main.service to /lib/systemd/system/.
+
+start_service
+~~~~~~~~~~~~~
+
+hello_monitor
+=============
+
+Once the:
+
+- monitor is plugged in with the CTs strapped around the power lines.
+- the venv has been installed and activated.
+- the FHmonitor package has been installed.
+
+Type::
+
+   (venv)$hello_monitor
+
+If all is working, you should get reasonable active and reactive power readings.
 
 
-Say hello
-~~~~~~~~~
-
-Once you install the FHmonitor package within your virtualenv, just say hello::
-
-(venv)$hello
-
-hello is a command that runs the following script:
-::
-
-   from FHmonitor.monitor import Monitor
-
-   m = Monitor()
-   m.init_sensor()  # You will most likely need to adjust.
-   pA, pR = m.take_reading()
-
-Calibration
-~~~~~~~~~~~
-
-Readings will be off unless the energy monitor is calibrated.  The most
-important thing to calibrate is the voltage reading.
-
-**Note: You need only calibrate if you are unsure if the Power Transformer
-used with the energy monitor has not been already calibrated.**
-
-To calibrate:
-- Plug the Power Transformer into a `Kill-A-Watt <https://amzn.to/2Mcjkt7>`_.  The Kill-A-Watt will
-be the reference voltage.
-
-Note: Make sure you understand the energy sensor initialization
-parameters of the :meth:`~FHmonitor.monitor.Monitor.init_sensor` method.  You
-could be using a different Power Transformer and/or Current Transformers.
-Some default values are discussed in `Circuit Setup's documentation <https://github.com/CircuitSetup/Split-Single-Phase-Energy-Meter#calibration>`_.
-
-
-Calibrating the Monitor
-~~~~~~~~~~~~~~~~~~~~~~~
-
-At a minimum, the voltage should be calibrated prior to using a new
-Power Transformer with the energy monitor.  If the same Power Transformer
-is used on other energy monitors, the calibration values should be fine with it.
-
-
-- Measure the voltage reading from the energy monitor::
-
-   from FHmonitor.atm90_e32_pi import ATMATM90e32
-   energy_sensor = ATM90e32(lineFreq, PGAGain, VoltageGain,
-                            CurrentGainCT1, 0, CurrentGainCT2)
-   m.init_sensor() # Initialize with the current values.
-   voltage_reading = m.
-Variables for setting monitor calibration are found within :meth:`~FHmonitor.monitor.Monitor.init_sensor`.
-Readings will most likely be off unless you calibrate what the atm90e32
-chip assumes about the Power Tranformer and Current Tranformers you are using.
-We use the default values for::
-
-   lineFreq = 4485  # 4485 for 60 Hz (North America)
-   PGAGain = 21     # 21 for 100A (2x), 42 for >100A (4x)
-
-What is left to calibrate are the voltage and current gain values.
-These are important, because they can cause havoc with the accuracy of the voltage, current, power readings.
-
-Voltage Calibration
-~~~~~~~~~~~~~~~~~~~
-
-The gain value is tied to the transformer we are using.  We decided to standardize on the `Jameco 9V power supply, part no. 157041 <https://www.jameco.com/shop/ProductDisplay?catalogId=10001&langId=-1&storeId=10001&productId=157041>`_.  The default voltage gain for a 9V AC transformer was 42080.  With this setting for voltage gain, our readings were over 15 watts higher than what the actual voltage was.
-
-To determine the actual voltage, we used the extremely useful `Kill-A-Watt <https://amzn.to/2Mcjkt7>`_
-as the voltage reference.
-
-To calibrate the voltage gain, we used the formula/info in `the app note <https://github.com/BitKnitting/energy_monitor_firmware/blob/master/docs/Atmel-46103-SE-M90E32AS-ApplicationNote.pdf>`_
-See section 4.2.6 Voltage/Current Measurement
-Calibration where it discusses using existing voltage gain.
-
-where:
-
-- reference voltage = reading from Kill-A-Watt
-- voltage measurement value = the reading for voltage we got from initializing the atm90e32 instance with the voltage gain value and reading the `line_voltageA` property.
-
-new `VoltageGain` = reference voltage/voltage measurement * current voltage gain
-
-e.g. using a different 9V transformer:
-- Kill-A-Watt shows V = 121.5
-- reading shows voltage at 117.5
-- current `VoltageGain` is 36650
-
-new `Voltage Gain = 121.5/117.5*36650 = 37898`
-
-Calculate the value, and change the `VoltageGain` to the calculated value.
-
-Current Calibration
-~~~~~~~~~~~~~~~~~~~
-
-We found the default current gain gave current readings close to what we
-got with the Kill-A-Watt.  Because it was easy to do so, we set the
-`CurrentGainCT1` and `CurrentGainCT2` values to our calculation,
-using the current readings in place of the voltage readings as discussed
-in the app note.
 
 
 Monitor class
--------------
+=============
 
 The class you will use the most is :class:`~FHmonitor.monitor.Monitor`.
 This class contains methods to:
@@ -151,7 +131,7 @@ This class contains methods to:
    :undoc-members:
 
 Store class
------------
+===========
 The :class:`~FHmonitor.monitor.Monitor` class uses an implementation of the :class:`~FHmonitor.store.Store` abstract class to store power readings into a datastore.  The only data store currently available is the mongo db.  We originally started with
 a Firebase DB, but decided running everything on a Raspberry Pi was much easier.  Mongo db can be run on the Raspberry Pi at no additional $ cost.
 
