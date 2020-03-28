@@ -44,7 +44,7 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/bitknitting/FHmonitor',
-    version='0.0.8',
+    version='0.0.9',
     zip_safe=False,
     entry_points={
         'console_scripts': [
