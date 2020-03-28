@@ -1,4 +1,4 @@
-#!/home/pi/projects/FHmonitor_project/venv/bin/python3
+#!/home/pi/projects/FHmonitor/venv/bin/python3
 ################################################
 #
 # FHmonitor_main

@@ -1,6 +1,7 @@
 from FHmonitor.monitor import Monitor  # noqa
 from FHmonitor.calibrate import Calibrate  # noqa
 import textwrap
+import pathlib
 import os
 import stat
 import argparse
@@ -17,7 +18,70 @@ init_sensor_text_list = textwrap.wrap(("2) Initialize the energy meter..."
                                        "you are using.  "), 50)
 
 
+def _modify_shell_script_with_proj_path():
+    package_path = pathlib.Path(__file__).parent.absolute()
+    project_path = os.path.dirname(package_path)
+    systemd_path = os.path.join(package_path, 'systemd')
+    shell_filename = systemd_path+'/run_FHmonitor_main.sh'
+    with open(shell_filename) as f:
+        # Get the contents of the shell file as a list of text.
+        contents = f.readlines()
+        f.close()
+    # Does contents already contain a line with PROJ_PATH= ?
+    already_contains_PROJ_PATH = False
+    for c in contents:
+        if "PROJ_PATH=" in c:
+            already_contains_PROJ_PATH = True
+            break
+    if not already_contains_PROJ_PATH:
+        # Stick in the third line
+        proj_path_in_file = "PROJ_PATH="+project_path
+        contents.insert(2, proj_path_in_file)
+    with open(shell_filename, "w") as f:
+        contents = "".join(contents)
+        f.write(contents)
+        f.close()
+    return systemd_path
+
+
+def _modify_service_file_with_systemd_path(systemd_path):
+    service_filename = systemd_path+'/FHmonitor_main.service'
+    shell_filename = systemd_path+'/run_FHmonitor_main.sh'
+    with open(service_filename) as f:
+        contents = f.readlines()
+        f.close()
+    # Find and replace the ExecStart line
+    for i, c in enumerate(contents):
+        if "ExecStart" in c:
+            contents[i] = "ExecStart="+shell_filename+"\n"
+            break
+    with open(service_filename, "w") as f:
+        contents = "".join(contents)
+        f.write(contents)
+        f.close()
+
+
+def _change_perms_on_files(systemd_path):
+    filenames = ["/FHmonitor_main.py",
+                 "/FHmonitor_main.service", "/run_FHmonitor_main.sh"]
+    # Set perms so systemd can run the python file.
+    for f in filenames:
+        filename = systemd_path+f
+        st = os.stat(filename)
+        os.chmod(filename, st.st_mode | stat.S_IEXEC)
+
+
+def _copy_systemd_files(systemd_path):
+    # Copy service file where systemd expects it to be.
+    service_path = systemd_path + '/FHmonitor_main.service'
+    cmd_str = 'sudo cp ' + service_path + ' /lib/systemd/system/.'
+    os.system(cmd_str)
+
+
 def hello_monitor():
+    """Checks to see if the monitor is hooked up properly and can
+    give us power readings.
+    """
     print(*(init_class_text_list[i]
             for i in range(len(init_class_text_list))), sep='\n')
     m = Monitor()
@@ -38,25 +102,12 @@ def hello_monitor():
 def start_service():
     """Get the systemd service up and running that runs FHmonitor_main.py
 
-    TODO: Still not quite right...
     """
-    systemd_path = os.path.join(os.path.dirname(__file__), 'systemd')
-    # Set perms so systemd can run the python file.
-    code_filename = systemd_path+'/FHmonitor_main.py'
-    st = os.stat(code_filename)
-    os.chmod(code_filename, st.st_mode | stat.S_IEXEC)
-    code_filename = systemd_path+'/run_FHmonitor_main.sh'
-    st = os.stat(code_filename)
-    os.chmod(code_filename, st.st_mode | stat.S_IEXEC)
+    systemd_path = _modify_shell_script_with_proj_path()
+    _modify_service_file_with_systemd_path(systemd_path)
+    _change_perms_on_files(systemd_path)
+    _copy_systemd_files(systemd_path)
 
-    # Copy service file where systemd expects it to be.
-    service_path = systemd_path + '/FHmonitor_main.service'
-    cmd_str = 'sudo cp ' + service_path + ' /lib/systemd/system/.'
-    os.system(cmd_str)
-    # Copy the bash script..
-    bash_path = systemd_path + '/run_FHmonitor_main.sh'
-    cmd_str = 'sudo cp ' + bash_path + ' /usr/local/bin/.'
-    os.system(cmd_str)
     # Enable the service
     os.system('sudo systemctl enable FHmonitor_main')
     print('============================')
