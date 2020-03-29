@@ -80,9 +80,9 @@ install_service
 
 Use the command::
 
-   install_service
+   (venv)$ install_service
 
-to install the systemd service.  The code for install_service is located in `command_line.py <https://github.com/BitKnitting/FHmonitor/blob/b06dc54c94eb5ee25eb026f391f94ad468c9e77d/FHmonitor/command_line.py>`_.
+to install the systemd service.  The code for install_service is located in `command_line.py <https://github.com/BitKnitting/FHmonitor/blob/c425001252694278b7b2280dd40f10bf63ac1929/FHmonitor/command_line.py#L114>`_.
 
 install_service modifies:
 
@@ -95,9 +95,36 @@ Then copies FHmonitor_main.service to /lib/systemd/system/.
 start_service
 ~~~~~~~~~~~~~
 
+Use the command::
+
+   (venv)$ start_service
+
+To execute the OS commands that will start the FHmonitor_main.service systemd service.  The code for `start_service <https://github.com/BitKnitting/FHmonitor/blob/c425001252694278b7b2280dd40f10bf63ac1929/FHmonitor/command_line.py#L126>`_.
+
+stop_service
+~~~~~~~~~~~~
+
+Use the command::
+
+   (venv)$ stop_service
+
+To execute the OS command for stopping the FHmonitor_main.service systemd service.  The code for `stop_service <https://github.com/BitKnitting/FHmonitor/blob/c425001252694278b7b2280dd40f10bf63ac1929/FHmonitor/command_line.py#L143>`_
+
+status_service
+~~~~~~~~~~~~~~
+
+Use the command::
+
+   (venv)$ status_service
+
+To execute the OS command for checking the status of the FHmonitor_main.service systemd service.  The code for `status_service <https://github.com/BitKnitting/FHmonitor/blob/c425001252694278b7b2280dd40f10bf63ac1929/FHmonitor/command_line.py#L148>`_
+
+
+Other Command Line Utilities
+============================
 
 hello_monitor
-=============
+~~~~~~~~~~~~~
 
 Once the:
 
@@ -110,6 +137,8 @@ Type::
    (venv)$hello_monitor
 
 If all is working, you should get reasonable active and reactive power readings.
+
+The code for `hello_monitor <https://github.com/BitKnitting/FHmonitor/blob/c425001252694278b7b2280dd40f10bf63ac1929/FHmonitor/command_line.py#L93>`_.
 
 
 
