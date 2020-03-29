@@ -4,7 +4,7 @@ include HISTORY.rst
 include LICENSE
 include README.rst
 
-include FHmonitor/calibrate_values.json
+include FHmonitor/calibration.json
 recursive-include FHmonitor/systemd   *
 recursive-include tests *
 recursive-exclude * __pycache__

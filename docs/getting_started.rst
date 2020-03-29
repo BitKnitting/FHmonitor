@@ -1,8 +1,36 @@
 .. highlight:: shell
 
-============
-Installation
-============
+
+Getting Started
+===============
+
+- make a directory for the FHmonitor package, e.g.::
+
+    $ mkdir FHmonitor
+
+- change into the directory, e.g.::
+
+    $ cd FHmonitor
+
+- install a venv, e.g.::
+
+    $ pip install -m venv venv
+
+- enter the virtual environment, e.g.::
+
+    $ . venv/bin/activate
+
+You should see a prompt similar to this one::
+
+    (venv) pi@raspberrypi:~/projects/FHmonitor $
+
+- pip install FHmonitor, e.g.::
+
+    $ pip install FHmonitor
+
+
+
+
 
 
 Stable release

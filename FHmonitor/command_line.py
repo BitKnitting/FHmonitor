@@ -171,7 +171,7 @@ def calibrate_current():
 
 
 def main():
-    pass
+    start_service()
 
 
 if __name__ == "__main__":
