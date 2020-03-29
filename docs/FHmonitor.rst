@@ -53,7 +53,7 @@ The various calibration parameters are:
 
 calibrate_voltage
 ~~~~~~~~~~~~~~~~~
-After starting up the venv and pip installing FHmonitor, the calibrate_voltage command is available.  This
+After starting up the venv and pip installing FHmonitor, the `calibrate_voltage <https://github.com/BitKnitting/FHmonitor/blob/master/FHmonitor/command_line.py#L133>`_ command is available.  This
 command runs a python script that will adjust the VoltageGain value within `calibration.json <https://github.com/BitKnitting/FHmonitor/blob/master/FHmonitor/calibration.json>`_.  Prior to
 using the command, you should have the energy meter plugged into a `Kill-A-Watt <https://amzn.to/2Mcjkt7>`_.  The Kill-A-Watt will
 be the reference voltage.  Running the command with the -s (--save) option will figure out the new VoltageGain
@@ -62,7 +62,7 @@ If the -s option is not specified, the new VoltageGain value will not be saved.
 
 calibrate_current
 ~~~~~~~~~~~~~~~~~
-calibrate_current Instead similar in concept to calibrate_voltage.  Instead of using voltage readings, current readings are used.  The
+`calibrate_current <https://github.com/BitKnitting/FHmonitor/blob/master/FHmonitor/command_line.py#L142>`_ is similar in concept to calibrate_voltage.  Instead of using voltage readings, current readings are used.  The
 CT can be plugged into either of the CT plugs on the meter.  We use a test wire assembly to read the current
 of a device (for example a lamp) using a CT.
 
@@ -94,6 +94,7 @@ Then copies FHmonitor_main.service to /lib/systemd/system/.
 
 start_service
 ~~~~~~~~~~~~~
+
 
 hello_monitor
 =============
