@@ -44,7 +44,7 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/bitknitting/FHmonitor',
-    version='0.0.11',
+    version='0.0.12',
     zip_safe=False,
     entry_points={
         'console_scripts': [
@@ -52,6 +52,7 @@ setup(
             'install_service=FHmonitor.command_line:install_service',
             'start_service=FHmonitor.command_line:start_service',
             'status_service=FHmonitor.command_line:status_service',
+            'stop_service=FHmonitor.command_line:stop_service',
             'calibrate_voltage=FHmonitor.command_line:calibrate_voltage',
             'calibrate_current=FHmonitor.command_line:calibrate_current',
 
