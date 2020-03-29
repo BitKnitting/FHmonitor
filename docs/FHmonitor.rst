@@ -120,11 +120,8 @@ Use the command::
 To execute the OS command for checking the status of the FHmonitor_main.service systemd service.  The code for `status_service <https://github.com/BitKnitting/FHmonitor/blob/c425001252694278b7b2280dd40f10bf63ac1929/FHmonitor/command_line.py#L148>`_
 
 
-Other Command Line Utilities
-============================
-
 hello_monitor
-~~~~~~~~~~~~~
+=============
 
 Once the:
 
