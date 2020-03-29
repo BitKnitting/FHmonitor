@@ -37,10 +37,10 @@ def _modify_shell_script_with_proj_path():
         # Get the contents of the shell file as a list of text.
         contents = f.readlines()
         f.close()
-        # Find and replace the ProjPath line
+        # Find and replace the PROJ_PATH line
     for i, c in enumerate(contents):
-        if "ProjPath" in c:
-            contents[i] = "ProjPath="+project_path+"\n"
+        if "PROJ_PATH" in c:
+            contents[i] = "PROJ_PATH="+project_path+"\n"
             break
     with open(shell_filename, "w") as f:
         contents = "".join(contents)
