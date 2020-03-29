@@ -2,7 +2,7 @@
 
 __author__ = """Margaret Johnson"""
 __email__ = 'contact@fithome.life'
-__version__ = '0.0.10'
+__version__ = '0.0.11'
 
 # Simpler access to the Monitor class.
 from FHmonitor.monitor import Monitor # noqa
