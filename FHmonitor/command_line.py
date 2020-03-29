@@ -19,24 +19,29 @@ init_sensor_text_list = textwrap.wrap(("2) Initialize the energy meter..."
 
 
 def _modify_shell_script_with_proj_path():
+    """Modify run_FHmonitor_main.sh's PROJ_PATH line to
+    represent the path to where the systemd files are
+    located.
+
+    :return: systemd_path.  The absolute path to the systemd files.
+    This is used by subsequent functions.
+
+    """
     package_path = pathlib.Path(__file__).parent.absolute()
     project_path = os.path.dirname(package_path)
     systemd_path = os.path.join(package_path, 'systemd')
+    # The shell file is called by FHmonitor_main.service to
+    # execute FHmonitor_main.py
     shell_filename = systemd_path+'/run_FHmonitor_main.sh'
     with open(shell_filename) as f:
         # Get the contents of the shell file as a list of text.
         contents = f.readlines()
         f.close()
-    # Does contents already contain a line with PROJ_PATH= ?
-    already_contains_PROJ_PATH = False
-    for c in contents:
-        if "PROJ_PATH=" in c:
-            already_contains_PROJ_PATH = True
+        # Find and replace the ProjPath line
+    for i, c in enumerate(contents):
+        if "ProjPath" in c:
+            contents[i] = "ProjPath="+project_path+"\n"
             break
-    if not already_contains_PROJ_PATH:
-        # Stick in the third line
-        proj_path_in_file = "PROJ_PATH="+project_path
-        contents.insert(2, proj_path_in_file)
     with open(shell_filename, "w") as f:
         contents = "".join(contents)
         f.write(contents)
@@ -45,6 +50,13 @@ def _modify_shell_script_with_proj_path():
 
 
 def _modify_service_file_with_systemd_path(systemd_path):
+    """Change the ExecStart line to include the absolute path
+    to the shell file (run_FHmonitor_main.sh).
+
+    :param systemd_path: The directory where the files used to
+    setup, start, and manage the systemd files are located.
+    **The template service file MUST INCLUDE the ExecStart line.**
+    """
     service_filename = systemd_path+'/FHmonitor_main.service'
     shell_filename = systemd_path+'/run_FHmonitor_main.sh'
     with open(service_filename) as f:
@@ -99,15 +111,22 @@ def hello_monitor():
     print('==================================================')
 
 
-def start_service():
-    """Get the systemd service up and running that runs FHmonitor_main.py
-
+def install_service():
+    """Install FHmonitor_main.service by doing all the steps that
+    would be necessary to do by hand.  The name of the functions
+    should provide enough of a clue as to what is going on.
     """
     systemd_path = _modify_shell_script_with_proj_path()
     _modify_service_file_with_systemd_path(systemd_path)
     _change_perms_on_files(systemd_path)
     _copy_systemd_files(systemd_path)
+    start_service()
 
+
+def start_service():
+    """Get the systemd service up and running that runs FHmonitor_main.py
+
+    """
     # Enable the service
     os.system('sudo systemctl enable FHmonitor_main')
     print('============================')
