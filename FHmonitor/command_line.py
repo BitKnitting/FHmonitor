@@ -1,7 +1,8 @@
+#!/home/pi/projects/FHmonitor/venv/bin/python3
 from FHmonitor.monitor import Monitor  # noqa
 from FHmonitor.calibrate import Calibrate  # noqa
+import pdb
 import textwrap
-import pathlib
 import os
 import stat
 import argparse
@@ -18,33 +19,29 @@ init_sensor_text_list = textwrap.wrap(("2) Initialize the energy meter..."
                                        "you are using.  "), 50)
 
 
-def _modify_shell_script_with_proj_path():
-    """Modify run_FHmonitor_main.sh's PROJ_PATH line to
-    represent the path to where the systemd files are
-    located.
+def _create_shell_script():
+    """ Creates the shell script (run_FHmonitor_main.sh) that
+    starts up the python script that endlessly reads and stores
+    power readings.  The venv is activated prior to running the
+    python script.
 
-    :return: systemd_path.  The absolute path to the systemd files.
-    This is used by subsequent functions.
-
+    The absolute path to the location of the systemd files is
+    returned for subsequent function calls to use.
     """
-    package_path = pathlib.Path(__file__).parent.absolute()
-    project_path = os.path.dirname(package_path)
+    package_path = os.path.abspath(os.path.dirname(__file__))
     systemd_path = os.path.join(package_path, 'systemd')
-    # The shell file is called by FHmonitor_main.service to
-    # execute FHmonitor_main.py
     shell_filename = systemd_path+'/run_FHmonitor_main.sh'
-    with open(shell_filename) as f:
-        # Get the contents of the shell file as a list of text.
-        contents = f.readlines()
-        f.close()
-        # Find and replace the PROJ_PATH line
-    for i, c in enumerate(contents):
-        if "PROJ_PATH" in c:
-            contents[i] = "PROJ_PATH="+project_path+"\n"
-            break
     with open(shell_filename, "w") as f:
-        contents = "".join(contents)
-        f.write(contents)
+        # Write the bin/bash line.
+        f.write("#!/bin/bash\n")
+        # Write the line to activate the venv.
+        activate_venv = ". " + \
+            package_path[:package_path.find("/lib")]+"/bin/activate\n"
+        f.write(activate_venv)
+        # Write the line to start up the python script that gathers
+        # power readings.
+        python_cmd = "python3 "+systemd_path+"/FHmonitor_main.py\n"
+        f.write(python_cmd)
         f.close()
     return systemd_path
 
@@ -111,22 +108,15 @@ def hello_monitor():
     print('==================================================')
 
 
-def install_service():
-    """Install FHmonitor_main.service by doing all the steps that
-    would be necessary to do by hand.  The name of the functions
-    should provide enough of a clue as to what is going on.
+def start_service():
+    """Get the FHmonitor_main.service up set up correctly and started.
+
+
     """
-    systemd_path = _modify_shell_script_with_proj_path()
+    systemd_path = _create_shell_script()
     _modify_service_file_with_systemd_path(systemd_path)
     _change_perms_on_files(systemd_path)
     _copy_systemd_files(systemd_path)
-    start_service()
-
-
-def start_service():
-    """Get the systemd service up and running that runs FHmonitor_main.py
-
-    """
     # Enable the service
     os.system('sudo systemctl enable FHmonitor_main')
     print('============================')
@@ -142,7 +132,7 @@ def start_service():
 
 def stop_service():
     os.system('sudo systemctl stop FHmonitor_main')
-    pass
+    print('FHmonitor_main service has been stopped.')
 
 
 def status_service():
@@ -171,7 +161,7 @@ def calibrate_current():
 
 
 def main():
-    start_service()
+    pass
 
 
 if __name__ == "__main__":

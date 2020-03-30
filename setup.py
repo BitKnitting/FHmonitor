@@ -49,7 +49,6 @@ setup(
     entry_points={
         'console_scripts': [
             'hello_monitor=FHmonitor.command_line:hello_monitor',
-            'install_service=FHmonitor.command_line:install_service',
             'start_service=FHmonitor.command_line:start_service',
             'status_service=FHmonitor.command_line:status_service',
             'stop_service=FHmonitor.command_line:stop_service',
