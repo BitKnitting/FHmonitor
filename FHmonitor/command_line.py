@@ -1,7 +1,7 @@
 #!/home/pi/projects/FHmonitor/venv/bin/python3
 from FHmonitor.monitor import Monitor  # noqa
 from FHmonitor.calibrate import Calibrate  # noqa
-import pdb
+# import pdb
 import textwrap
 import os
 import stat
@@ -28,7 +28,6 @@ def _create_shell_script():
     The absolute path to the location of the systemd files is
     returned for subsequent function calls to use.
     """
-    pdb.set_trace()
     package_path = os.path.abspath(os.path.dirname(__file__))
     systemd_path = os.path.join(package_path, 'systemd')
     project_path = os.path.dirname(package_path)
