@@ -77,22 +77,6 @@ The systemd service, `FHmonitor_main.service <https://github.com/BitKnitting/FHm
 starts a shell script, `run_FHmonitor_main.sh <https://github.com/BitKnitting/FHmonitor/blob/master/FHmonitor/systemd/run_FHmonitor_main.sh>`_.
 The shell script starts `FHmonitor_main.py <https://github.com/BitKnitting/FHmonitor/blob/b06dc54c94eb5ee25eb026f391f94ad468c9e77d/FHmonitor/systemd/FHmonitor_main.py>`_.
 
-install_service
-~~~~~~~~~~~~~~~
-
-Use the command::
-
-   (venv)$ install_service
-
-to install the systemd service.  The code for install_service is located in `command_line.py <https://github.com/BitKnitting/FHmonitor/blob/c425001252694278b7b2280dd40f10bf63ac1929/FHmonitor/command_line.py#L114>`_.
-
-install_service modifies:
-
-- the ExecStart= line of FHmonitor_main.service to reference the run_FHmonitor_main.sh script located within the project's systemd directory.
-- the ProjPath in run_FHmonitor_main.sh to be the absolute path to where the FHmonitor project is located.
-- the permissions on the files in the systemd directory.
-
-Then copies FHmonitor_main.service to /lib/systemd/system/.
 
 start_service
 ~~~~~~~~~~~~~
@@ -101,7 +85,11 @@ Use the command::
 
    (venv)$ start_service
 
-To execute the OS commands that will start the FHmonitor_main.service systemd service.  The code for `start_service <https://github.com/BitKnitting/FHmonitor/blob/c425001252694278b7b2280dd40f10bf63ac1929/FHmonitor/command_line.py#L126>`_.
+To start the FHmonitor_main.service systemd service.  The code for `start_service <https://github.com/BitKnitting/FHmonitor/blob/c425001252694278b7b2280dd40f10bf63ac1929/FHmonitor/command_line.py#L126>`_.
+At the end of start_service, the service status is given.  The PID will be shown in the results.
+To make sure your service is still running, find the PID and use the command::
+
+   (venv)$ journalctl _PID=<PID number>
 
 stop_service
 ~~~~~~~~~~~~
