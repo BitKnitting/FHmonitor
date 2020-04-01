@@ -28,15 +28,18 @@ def _create_shell_script():
     The absolute path to the location of the systemd files is
     returned for subsequent function calls to use.
     """
+    pdb.set_trace()
     package_path = os.path.abspath(os.path.dirname(__file__))
     systemd_path = os.path.join(package_path, 'systemd')
+    project_path = os.path.dirname(package_path)
     shell_filename = systemd_path+'/run_FHmonitor_main.sh'
     with open(shell_filename, "w") as f:
         # Write the bin/bash line.
         f.write("#!/bin/bash\n")
         # Write the line to activate the venv.
         activate_venv = ". " + \
-            package_path[:package_path.find("/lib")]+"/bin/activate\n"
+            project_path + "/venv/bin/activate\n"
+        # package_path[:pr_path.find("/lib")]+"/bin/activate\n"
         f.write(activate_venv)
         # Write the line to start up the python script that gathers
         # power readings.
@@ -105,6 +108,7 @@ def hello_monitor():
     print('Success! Took a reading.')
     print('==================================================')
     print(f'Active Power: {pA:.2f}, Reactive Power: {pR:.2f}')
+    print(f'Total Power: {pA+pR:.2f}')
     print('==================================================')
 
 

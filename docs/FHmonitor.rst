@@ -29,6 +29,8 @@ Hardware Setup Steps
 - :doc:`Set up the Raspberry Pi. <rasppi>`
 - :doc:`Connect the Hardware. <connect_the_hw>`
 
+Once the hardware is setup, the CTs need to be installed.  Circuit Setup has an excellent `write up on installing CTs <https://github.com/CircuitSetup/Split-Single-Phase-Energy-Meter/blob/16ef65e366df486c35312c664c8c40380c1bdbb5/README.md#connect-current-transformers-to-your-mains>`_
+
 Calibrating the Meter
 =====================
 Getting good readings from the atm90e32 assumes the parameters defined in `calibration.json <https://github.com/BitKnitting/FHmonitor/blob/master/FHmonitor/calibration.json>`_
