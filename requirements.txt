@@ -19,7 +19,7 @@ pluggy==0.13.1
 py==1.8.1
 pycodestyle==2.5.0
 pyftdi==0.44.2
-Pygments==2.5.2
+Pygments==2.7.4
 pymongo==3.4.0
 pyparsing==2.4.6
 pyserial==3.4
